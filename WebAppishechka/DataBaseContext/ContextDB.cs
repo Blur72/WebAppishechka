@@ -11,5 +11,6 @@ namespace WebAppishechka.DataBaseContext
         }
 
         public DbSet<User> User { get; set; }
+        public DbSet<Movie> Movie { get; set; }
     }
 }

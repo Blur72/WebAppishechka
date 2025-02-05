@@ -24,5 +24,4 @@ namespace WebAppishechka.Model
         [Required]
         public string Password { get; set; }
     }
-
 }
