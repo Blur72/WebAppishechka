@@ -34,8 +34,19 @@ namespace WebAppishechka.Controllers
             return Ok(movie);
         }
 
+
+        [HttpGet("SearchByTitle")]
+        public async Task<IActionResult> GetMoviesByName(string title)
+        {
+            var movies = await _movieService.GetMovieByNameAsync(title);
+            if (movies == null)
+                return NotFound();
+
+            return Ok(movies);
+        }
+
         [HttpPost]
-        public async Task<IActionResult> CreateMovie([FromBody] Movie movie)
+        public async Task<IActionResult> CreateMovie(Movie movie)
         {
             var result = await _movieService.CreateMovieAsync(movie);
             if (!result)
@@ -45,16 +56,11 @@ namespace WebAppishechka.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateMovie(int id, [FromBody] Movie movie)
+        public async Task<IActionResult> UpdateMovie(int id, Movie movie)
         {
             if (id != movie.Id)
             {
-                return BadRequest("ID in the request body does not match the ID in the route.");
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
+                return BadRequest();
             }
 
             var result = await _movieService.UpdateMovieAsync(movie);

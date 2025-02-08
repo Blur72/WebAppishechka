@@ -24,6 +24,12 @@ namespace WebAppishechka.Service
             return await _context.Movie.FindAsync(id);
         }
 
+
+        public async Task<List<Movie>> GetMovieByNameAsync(string title)
+        {
+            return await _context.Movie.Where(m => m.Title.StartsWith(title)).ToListAsync();
+        }
+
         public async Task<bool> CreateMovieAsync(Movie movie)
         {
             if (await _context.Movie.AnyAsync(m => m.Title == movie.Title))
@@ -38,9 +44,7 @@ namespace WebAppishechka.Service
         {
             var existingMovie = await _context.Movie.FindAsync(movie.Id);
             if (existingMovie == null)
-            {
                 return false;
-            }
 
             existingMovie.Title = movie.Title;
             existingMovie.Description = movie.Description;
