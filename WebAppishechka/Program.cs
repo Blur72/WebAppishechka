@@ -2,6 +2,9 @@ using Microsoft.EntityFrameworkCore;
 using WebAppishechka.Interfaces;
 using WebAppishechka.Service;
 using WebAppishechka.DataBaseContext;
+using WebAppishechka.Hubs;
+using WebAppishechka.Model;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,8 +20,18 @@ builder.Services.AddDbContext<ContextDB>(options =>
 
 builder.Services.AddScoped<IMovieService, MovieService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IChatMessage, ChatService>();
+builder.Services.AddScoped<IUserChat, UserChatService>();
+
+builder.Services.AddSignalR();
+
+
 
 var app = builder.Build();
+
+app.MapHub<ChatHub>("/chatHub");
+app.MapHub<GeneralChatHub>("/generalHub");
+app.MapHub<GeneralChatHub>("/userChatHub");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
