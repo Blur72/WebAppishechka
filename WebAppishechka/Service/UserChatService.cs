@@ -23,7 +23,7 @@ namespace WebAppishechka.Service
                 .ToListAsync();
         }
 
-        public async Task SendMessage(string senderId, string senderName, string recipientId, string message, string imageUrl = null)
+        public async Task SendMessage(string senderId, string senderName, string recipientId, string message)
         {
             var chatMessage = new UserChat
             {
@@ -31,7 +31,6 @@ namespace WebAppishechka.Service
                 SenderName = senderName,
                 RecipientId = recipientId,
                 Message = message,
-                ImageUrl = imageUrl,
                 Timestamp = DateTime.UtcNow
             };
 

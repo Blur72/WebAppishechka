@@ -1,35 +1,33 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WebAppishechka.Interfaces;
 using WebAppishechka.Model;
-using WebAppishechka.Requests;
-using WebAppishechka.Service;
 
 namespace WebAppishechka.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ChatController : Controller
+    public class ChatController(IChatMessage chatMassage) : Controller
     {
-        private readonly IChatMessage _chatMassage;
-
-        public ChatController(IChatMessage chatMassage)
+        [HttpGet]
+        public async Task<IActionResult> GetAllMessages(int page = 1, int pageSize = 10)
         {
-            _chatMassage = chatMassage;
+            var messages = await chatMassage.GetAllMessagesAsync(page, pageSize);
+            return Ok(messages);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAllMessages()
+        [HttpGet("Count")]
+        public async Task<ActionResult<int>> GetTotalMessageCount()
         {
-            var users = await _chatMassage.GetAllMessagesAsync();
-            return Ok(users);
+            var count = await chatMassage.GetTotalMessageCountAsync();
+            return Ok(count);
         }
 
 
         [HttpGet("movie/{movieId}")]
         public async Task<IActionResult> GetMovieCommentsByMovieId(string movieId)
         {
-            var comments = await _chatMassage.GetMovieCommentByMovieIdAsync(movieId);
-            if (comments == null || !comments.Any())
+            var comments = await chatMassage.GetMovieCommentByMovieIdAsync();
+            if (comments.Count == 0)
                 return NotFound();
 
             return Ok(comments);
@@ -38,7 +36,7 @@ namespace WebAppishechka.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateMessage(ChatMessage cm)
         {
-            var result = await _chatMassage.CreateMessageAsync(cm);
+            var result = await chatMassage.CreateMessageAsync(cm);
             if (!result)
                 return BadRequest("Email already exists");
 
@@ -51,83 +49,29 @@ namespace WebAppishechka.Controllers
             if (id != cm.Id)
                 return BadRequest();
 
-            var result = await _chatMassage.UpdateMessageAsync(cm);
+            var result = await chatMassage.UpdateMessageAsync(cm);
             if (!result)
                 return NotFound();
 
             return Ok();
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteMessage(int id)
         {
-            var result = await _chatMassage.DeleteMessageAsync(id);
+            var result = await chatMassage.DeleteMessageAsync(id);
             if (!result)
                 return NotFound();
 
             return Ok();
+        }
+
+        [HttpGet("SearchByTitle")]
+        public async Task<IActionResult> GetMessagesByName(string title)
+        {
+            var movies = await chatMassage.GetMessageByNameAsync(title);
+
+            return Ok(movies);
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//using Microsoft.AspNetCore.Mvc;
-//using System.Collections.Generic;
-//using System.Threading.Tasks;
-//using WebAppishechka.Model;
-//using WebAppishechka.DataBaseContext;
-//using Microsoft.EntityFrameworkCore;
-
-//[Route("api/chat")]
-//[ApiController]
-//public class ChatController : ControllerBase
-//{
-//    private readonly ContextDB _context;
-
-//    public ChatController(ContextDB context)
-//    {
-//        _context = context;
-//    }
-
-//    [HttpGet("{movieId}")]
-//    public async Task<ActionResult<List<ChatMessage>>> GetChatHistory(string movieId)
-//    {
-//        var messages = await _context.ChatMessages
-//            .Where(msg => msg.MovieId == movieId)
-//            .OrderBy(msg => msg.Timestamp)
-//            .ToListAsync();
-
-//        return Ok(messages);
-//    }
-//}

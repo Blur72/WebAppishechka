@@ -3,7 +3,6 @@ using WebAppishechka.Interfaces;
 using WebAppishechka.Service;
 using WebAppishechka.DataBaseContext;
 using WebAppishechka.Hubs;
-using WebAppishechka.Model;
 
 
 var builder = WebApplication.CreateBuilder(args);

@@ -12,28 +12,27 @@ public class GeneralChatHub : Hub
         _context = context;
     }
 
-    public async Task SendMessageGeneral(string movieId, string userId, string userName, string message)
+    public async Task SendMessageGeneral(string userId, string userName, string message)
     {
         var chatMessage = new ChatMessage
         {
-            MovieId = movieId,
             UserId = userId,
             UserName = userName,
             Message = message,
-            Timestamp = DateTime.UtcNow 
+            Timestamp = DateTime.UtcNow
         };
 
         _context.ChatMessages.Add(chatMessage);
         await _context.SaveChangesAsync();
 
-        await Clients.Group(movieId).SendAsync("ReceiveMessageGeneral", userId, userName, message);
+        // Уведомление всех клиентов о новом сообщении
+        await Clients.All.SendAsync("ReceiveMessageGeneral", userId, userName, message);
     }
 
-    public async Task<List<ChatMessage>> GetChatHistory(string movieId)
+    public async Task<List<ChatMessage>> GetChatHistory()
     {
         return await _context.ChatMessages
-            .Where(msg => msg.MovieId == movieId)
-            .OrderBy(msg => msg.Timestamp) 
+            .OrderBy(msg => msg.Timestamp)
             .ToListAsync();
     }
 }

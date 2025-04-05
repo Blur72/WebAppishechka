@@ -17,7 +17,6 @@ namespace WebAppishechka.Model
         public string RecipientId { get; set; }
         [Required]
         public string Message { get; set; }
-        public string ImageUrl { get; set; } // URL изображения
         [Required]
         public DateTime Timestamp { get; set; }
     }

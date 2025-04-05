@@ -12,7 +12,7 @@ public class UserChatHub : Hub
         _context = context;
     }
 
-    public async Task SendMessage(string recipientId, string senderId, string senderName, string message, string imageUrl = null)
+    public async Task SendMessage(string recipientId, string senderId, string senderName, string message)
     {
         var personalMessage = new UserChat
         {
@@ -20,7 +20,6 @@ public class UserChatHub : Hub
             SenderName = senderName,
             RecipientId = recipientId,
             Message = message,
-            ImageUrl = imageUrl,
             Timestamp = DateTime.UtcNow
         };
 
@@ -28,7 +27,7 @@ public class UserChatHub : Hub
         await _context.SaveChangesAsync();
 
         var connectionId = Context.ConnectionId;
-        await Clients.User(recipientId).SendAsync("ReceiveMessage", senderId, senderName, message, imageUrl);
+        await Clients.User(recipientId).SendAsync("ReceiveMessage", senderId, senderName, message);
     }
 
     public async Task<List<UserChat>> GetChatHistory(string userId1, string userId2)

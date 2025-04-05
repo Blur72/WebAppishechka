@@ -13,7 +13,6 @@ namespace WebAppishechka.DataBaseContext
         public DbSet<User> User { get; set; }
         public DbSet<Movie> Movie { get; set; }
         public DbSet<ChatMessage> ChatMessages { get; set; }
-
         public DbSet<UserChat> UserChat { get; set; }
     }
 }

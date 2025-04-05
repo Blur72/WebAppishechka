@@ -5,44 +5,37 @@ using WebAppishechka.Model;
 
 namespace WebAppishechka.Service
 {
-    public class MovieService : IMovieService
+    public class MovieService(ContextDB context) : IMovieService
     {
-        private readonly ContextDB _context;
-
-        public MovieService(ContextDB context)
+        public async Task<List<Movie?>> GetAllMoviesAsync()
         {
-            _context = context;
+            return await context.Movie.ToListAsync();
         }
 
-        public async Task<List<Movie>> GetAllMoviesAsync()
+        public async Task<Movie?> GetMovieByIdAsync(int id)
         {
-            return await _context.Movie.ToListAsync();
-        }
-
-        public async Task<Movie> GetMovieByIdAsync(int id)
-        {
-            return await _context.Movie.FindAsync(id);
+            return await context.Movie.FindAsync(id);
         }
 
 
-        public async Task<List<Movie>> GetMovieByNameAsync(string title)
+        public async Task<List<Movie?>> GetMovieByNameAsync(string title)
         {
-            return await _context.Movie.Where(m => m.Title.StartsWith(title)).ToListAsync();
+            return await context.Movie.Where(m => m!.Title.StartsWith(title)).ToListAsync();
         }
 
-        public async Task<bool> CreateMovieAsync(Movie movie)
+        public async Task<bool> CreateMovieAsync(Movie? movie)
         {
-            if (await _context.Movie.AnyAsync(m => m.Title == movie.Title))
+            if (await context.Movie.AnyAsync(m => m!.Title == movie!.Title))
                 return false;
 
-            _context.Movie.Add(movie);
-            await _context.SaveChangesAsync();
+            context.Movie.Add(movie);
+            await context.SaveChangesAsync();
             return true;
         }
 
         public async Task<bool> UpdateMovieAsync(Movie movie)
         {
-            var existingMovie = await _context.Movie.FindAsync(movie.Id);
+            var existingMovie = await context.Movie.FindAsync(movie.Id);
             if (existingMovie == null)
                 return false;
 
@@ -54,20 +47,20 @@ namespace WebAppishechka.Service
             existingMovie.ImageUrl = movie.ImageUrl;
 
 
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
             return true;
         }
 
         public async Task<bool> DeleteMovieAsync(int id)
         {
-            var movie = await _context.Movie.FindAsync(id);
+            var movie = await context.Movie.FindAsync(id);
             if (movie == null)
             {
                 return false;
             }
 
-            _context.Movie.Remove(movie);
-            await _context.SaveChangesAsync();
+            context.Movie.Remove(movie);
+            await context.SaveChangesAsync();
             return true;
         }
     }

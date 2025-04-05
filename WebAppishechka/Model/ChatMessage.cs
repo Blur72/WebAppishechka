@@ -10,7 +10,7 @@ namespace WebAppishechka.Model
 
         [Required]
         [ForeignKey("Movie")]
-        public string MovieId { get; set; } // Идентификатор фильма
+        public string MovieId { get; set; } = ""; // Идентификатор фильма
 
         [Required]
         [ForeignKey("User")] // Указывает, что это внешний ключ

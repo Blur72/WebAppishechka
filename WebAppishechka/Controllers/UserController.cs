@@ -1,43 +1,31 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WebAppishechka.Interfaces;
 using WebAppishechka.Model;
-using WebAppishechka.Requests;
-using WebAppishechka.Service;
 
 namespace WebAppishechka.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : Controller
+    public class UserController(IUserService userService) : Controller
     {
-        private readonly IUserService _userService;
-
-        public UserController(IUserService userService)
-        {
-            _userService = userService;
-        }
-
         [HttpGet]
         public async Task<IActionResult> GetAllUsers()
         {
-            var users = await _userService.GetAllUsersAsync();
+            var users = await userService.GetAllUsersAsync();
             return Ok(users);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<IActionResult> GetUserById(int id)
         {
-            var user = await _userService.GetUserByIdAsync(id);
-            if (user == null)
-                return NotFound();
-
+            var user = await userService.GetUserByIdAsync(id);
             return Ok(user);
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateUser(User user)
         {
-            var result = await _userService.CreateUserAsync(user);
+            var result = await userService.CreateUserAsync(user);
             if (!result)
                 return BadRequest("Email already exists");
 
@@ -50,7 +38,7 @@ namespace WebAppishechka.Controllers
             if (id != user.Id)
                 return BadRequest();
 
-            var result = await _userService.UpdateUserAsync(user);
+            var result = await userService.UpdateUserAsync(user);
             if (!result)
                 return NotFound();
 
@@ -60,7 +48,7 @@ namespace WebAppishechka.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
-            var result = await _userService.DeleteUserAsync(id);
+            var result = await userService.DeleteUserAsync(id);
             if (!result)
                 return NotFound();
 
@@ -75,12 +63,7 @@ namespace WebAppishechka.Controllers
                 return BadRequest(ModelState);
             }
 
-            var authenticatedUser = await _userService.AuthenticateAsync(loginRequest.Email, loginRequest.Password);
-            if (authenticatedUser == null)
-            {
-                return Unauthorized();
-            }
-
+            var authenticatedUser = await userService.AuthenticateAsync(loginRequest.Email, loginRequest.Password);
             return Ok(authenticatedUser);
         }
     }
